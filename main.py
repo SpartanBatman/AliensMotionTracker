@@ -195,7 +195,7 @@ try:
 
         my_clock.tick(21)
 finally:
-    print "clean exit"
+    print ("clean exit")
 
 scope.pySurface.fill((0,0,0))
 scope.screen.blit(scope.pySurface,(0,0))
