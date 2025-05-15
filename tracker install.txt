@@ -1,42 +1,48 @@
-install for rasbian jessie
+Install for Raspian Bookworm Lite
+1) Run sudo apt-get update && sudo apt-get upgrade -y
+2) Update firmware sudo rpi-update && sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
+2) Install Git sudo apt install git and reboot
 
-install folder on the pi
-1) navigate the /home/pi/
-2) create a folder named tracker
-3) copy files from github repository over to the new folder
+Install folder on the Pi
+1) Navigate the /home/pi/
+2) Create a folder named tracker
+3) Copy files from github repository over to the new folder (git pull https://github.com/SpartanBatman/AliensMotionTracker
 
 Enable interfaces
-1) open lxterminal
-2) type the following then press enter:
-	sudo raspi-config
-3) enable SPI
-4) enable IC2
-5) reboot
-6) open lxterminal
-7) type the following then press enter:
+1) Open terminal
+2) Type the following then press enter:
+	sudo raspi-config > Interfaces
+3) Enable SPI
+4) Enable IC2
+5) Reboot
+6) Open terminal
+7) Type the following then press enter:
 	sudo apt-get install i2c-tools (it may already be at the newest version, thats ok)
 8) type the following then press enter:
-	sudo leafpad
+	sudo nano
 9) insert the following lines:-
 	spi-bcm2835 
 	fbtft_device
 10) save file as /etc/modules-load.d/fbtft.conf
 11) type the following then press enter:
-	sudo leafpad
+	sudo nano
 12) insert the following lines:-
 	options fbtft_device name=fb_ili9341 gpios=reset:25,dc:24,led:12 speed=16000000 bgr=1 rotate=270 custom=1
 13) save file as /ect/modprobe.d/ili9341.conf
 
 Install python smbus
-1) open lxterminal
+1) open terminal
 2) type the following then press enter:
-	sudo apt-get install python.smbus
+	sudo apt-get install python3.smbus \ python3-dev python3-pip \ libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \ libsmpeg-dev libportmidi-dev libavformat-dev libswscale-dev \ libjpeg-dev libfreetype6-dev
+3) Python now uses virtual environments as best practice so cd into the tracker folder and create a virtual environment for python code to execute within.
+3a) python3 -m venv aliens_env (you can activate it by running source aliens_env/bin/activate and exit out by typing deactivate)
 
 Audio
-1) open lxterminal
+1) open terminal
 2) type the following then press enter:
-	curl -sS https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/i2samp.sh | bash
-3) follow onscreen instructions to reboot
+	curl -sS https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/main/i2samp.py
+3) Make the file executable chmod +x i2samp.py
+4) Follow onscreen instructions to reboot
 
 Frame buffer copy
 1) open terminal
@@ -59,7 +65,7 @@ Frame buffer copy
 	(note framebuffer start and stop code is in the tracker code)
 
 Auto Startup
-1) open lxterminal
+1) open terminal
 2) type the following then press enter:
 	sudo nano ~/.config/lxsession/LXDE-pi/autostart
 3) add the following at the end of the file
@@ -68,7 +74,7 @@ Auto Startup
 
 Finally, set the pi resolution to match the tft resolution of 320x240
 1) open terminal
-2) sudo nano /boot/config.txt
+2) sudo nano /boot/firmware/config.txt
 3) find the lines below
 	# Uncomment to force a console size. By default it will be display's size minus
 	# overscan.
