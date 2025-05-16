@@ -6,7 +6,7 @@ Install for Raspian Bookworm Lite
 Install folder on the Pi
 1) Navigate the /home/pi/
 2) Create a folder named tracker
-3) Copy files from github repository over to the new folder (git pull https://github.com/SpartanBatman/AliensMotionTracker
+3) Copy files from github repository over to the new folder (git clone https://github.com/SpartanBatman/AliensMotionTracker
 
 Enable interfaces
 1) Open terminal
