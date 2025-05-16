@@ -19,14 +19,16 @@ Enable interfaces
 7) Type the following then press enter:
 	sudo apt-get install i2c-tools (it may already be at the newest version, thats ok)
 8) type the following then press enter:
-	sudo nano /etc/modules-load.d/fbtft.conf
+	sudo nano
 9) insert the following lines:-
 	spi-bcm2835 
 	fbtft_device
-10) type the following then press enter:
-	sudo nano /ect/modprobe.d/ili9341.conf
-11) insert the following lines:-
+10) save file as /etc/modules-load.d/fbtft.conf
+11) type the following then press enter:
+	sudo nano
+12) insert the following lines:-
 	options fbtft_device name=fb_ili9341 gpios=reset:25,dc:24,led:12 speed=16000000 bgr=1 rotate=270 custom=1
+13) save file as /ect/modprobe.d/ili9341.conf
 
 Install python smbus
 1) open terminal
@@ -38,7 +40,7 @@ Install python smbus
 Audio
 1) open terminal
 2) type the following then press enter:
-	curl -sS https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/main/i2samp.py
+	wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/refs/heads/main/i2samp.py
 3) Make the file executable chmod +x i2samp.py
 4) Follow onscreen instructions to reboot
 
@@ -86,4 +88,3 @@ Finally, set the pi resolution to match the tft resolution of 320x240
         framebuffer_width=320
 	framebuffer_height=240
 5) save by ctrl+x [enter] y [enter]
-
