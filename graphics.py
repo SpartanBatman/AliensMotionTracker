@@ -1,105 +1,94 @@
-import pygame, random, math, time, pygame.mixer
-import time
-import sys
-from pygame.locals import *
-from contacts import Contacts,Contact
-from resources import resources
-from compass import Compass
+from PIL import Image, ImageDraw
+import math
+
+ScrWidth = 290
+ScrHeight = 320
+
+class ContactsArray:
+    def __init__(self, contacts):
+        self.contacts = contacts
+
+    def getClosestContactDistance(self):
+        if not self.contacts:
+            return float('inf')
+        return min(math.hypot(x - 160, y - 120) for x, y, age in self.contacts)
 
 class TrackerGraphics:
-
-    smallNumber = ""
-
     def __init__(self, scope, resources, calibration):
-        #initialise pygame
-        self.compass=Compass(calibration) #get a compass object
-        self.scope = scope #Use a pyscope object so we can run the program from the console
-        self.resources = resources #get the resources class instance
-        self.contactsArray = Contacts() #get a contacts class instance
-        self.text = None
-        self.smallnumber_text = None
-        self.dots= None
-        self.display_scale = None
-        self.closest_text = ""
-        self.smallnumber = ""
+        self.scope = scope
+        self.resources = resources
+        self.contacts = []
+        self.device = scope.device  # Get the luma.lcd device
+
+    def getClosestContactDistance(self):
+        if not self.contacts:
+            return float('inf')
+        return min(math.hypot(x - 160, y - 120) for x, y, age in self.contacts)
 
     def update(self, wave_size, addcontact, calibration):
+        # Start with black canvas matching device dimensions
+        base = Image.new("RGBA", (320, 240), "black")
+        
+        # Create a centered box for the HUDs
+        box = Image.new("RGBA", (ScrWidth, 240), (0, 0, 0, 0))  # Transparent box
+        box_w, box_h = box.size
+        offset = ((320 - box_w) // 2, 0)  # Center horizontally
+        base.paste(box, offset, box)  # Paste transparent box to create centering area
 
-        self.compass.updatexy(calibration)
-
-        if addcontact:
-            self.contactsArray.addContact(self.compass.smbusAvailable)
-
-        #Read the current direction of the tracker from the digital compass
-        bearing = self.compass.getCompassBearing()
-
-        #rotate the contacts in relation to the grid
-        self.contactsArray.updateContactsInWorld(bearing)
-      
-        #Set the screen background
-        backdrop=self.rot_center(self.resources.compass,bearing)
- 
-        background_colour = (0,0,0) 
-        self.scope.pySurface.fill(background_colour) 
-        self.scope.pySurface.blit(backdrop,(0,22))
+        # Draw HUD elements
+        if hasattr(self.resources, "hud"):
+            hud = self.resources.hud.convert("RGBA")
+            hud = hud.resize((ScrWidth, ScrHeight), Image.Resampling.LANCZOS)  # Resize to full height
+            hud_w, hud_h = hud.size
+            base_w, base_h = base.size
             
-        #render our contacts
-        if (len(self.contactsArray.ContactArray))>0:
-            for x in self.contactsArray.ContactArray:
-                trackerScale = self.contactsArray.trackerScale
-                opacityIndex = x.getOpacityIndex(wave_size, trackerScale)
-                self.scope.pySurface.blit(self.resources.contactBack[opacityIndex], (x.worldX-25,x.worldY-25))
-            for x in self.contactsArray.ContactArray:
-                trackerScale = self.contactsArray.trackerScale
-                opacityIndex = x.getOpacityIndex(wave_size, trackerScale)
-                self.scope.pySurface.blit(self.resources.contactFore[opacityIndex], (x.worldX-25,x.worldY-25))
+            # Rotate HUD based on compass reading
+            #hud = hud.rotate(-calibration.getHeading())  # Negative to rotate clockwise
+            
+            # Position behind bottom HUD with additional offset
+            offset = ((base_w - hud_w) // 2, base_h - hud_h + 100)  # Move down 20 pixels from bottom
+            base.paste(hud, offset, hud.split()[3])  # Use alpha channel as mask
 
-        #render the wave pulse with current wave size
-        self.scope.pySurface.blit(self.resources.waves[wave_size], (0,0))
+        if hasattr(self.resources, "info"):
+            hud_bottom = self.resources.info.convert("RGBA")
+            hud_bottom = hud_bottom.resize((ScrWidth, 50), Image.Resampling.LANCZOS)  # Resize to 50px height
+            hud_bottom_w, hud_bottom_h = hud_bottom.size
+            base_w, base_h = base.size
+            offset = ((base_w - hud_bottom_w) // 2, base_h - hud_bottom_h)  # Position at bottom
+            base.paste(hud_bottom, offset, hud_bottom.split()[3])  # Use alpha channel as mask
 
-        #Convert the range to the closest blip to text. If no blip present display dashes
-        if self.contactsArray.getClosestContactDistance() == 999:
-            self.closest_text = ""
-            self.smallnumber= ""
-        else:
-            if wave_size==0:
-                self.closest_text=str(self.contactsArray.getClosestContactDistance())
-                self.smallnumber = str(random.randint(10,99))
-        
-        range_prefix=""
-        if len(self.closest_text)==1:
-            range_prefix='0'
-        if len(self.closest_text)==2:
-            range_prefix=''
-        
-        #Render the display
-        self.text = self.resources.font.render(str(bearing),1,(215,0,0))
-        self.text = self.resources.font.render(range_prefix+self.closest_text,1,(215,0,0))
-        self.smallnumber_text=self.resources.smallfont.render(self.smallnumber,1,(215,0,0))
-        self.dots = self.resources.smallfont.render("-",1,(215,0,0))
-        self.display_scale=self.resources.displayScaleFont.render('m',1,(215,0,0))
+        draw = ImageDraw.Draw(base)
 
-        #render the info panel to screen
-        self.scope.pySurface.blit(self.resources.info,(0,182))
-        self.scope.pySurface.blit(self.text,(129,182))
-        self.scope.pySurface.blit(self.smallnumber_text,(170,182))
-        self.scope.pySurface.blit(self.dots,(162,182))
-        self.scope.pySurface.blit(self.display_scale,(178,195))
-        self.scope.screen.blit(self.scope.pySurface,(0,0))
+        # Add new contact if requested
+        if addcontact:
+            self.contacts.append((calibration.cx, calibration.cy, 1))
 
-        #update the display and show our images  
-        pygame.display.update()
+        # Update existing contacts
+        updated_contacts = []
+        for contact in self.contacts:
+            x, y, age = contact
+            if age < 30:
+                updated_contacts.append((x, y, age + 1))
+        self.contacts = updated_contacts
 
-        if wave_size==15:
-            self.contactsArray.moveContacts()
+        # Draw contacts
+        for contact in self.contacts:
+            x, y, age = contact
+            size = max(1, 6 - age // 5)
+            draw.ellipse((x - size, y - size, x + size, y + size), outline="green")
 
-        return self.contactsArray
+        # Draw pulse wave on top of HUD
+        if hasattr(self.resources, "waves") and wave_size < len(self.resources.waves):
+            pulse = self.resources.waves[wave_size].convert("RGBA")
+            pulse = pulse.resize((ScrWidth, 240), Image.Resampling.LANCZOS)
+            
+            # Center the pulse wave
+            pulse_w, pulse_h = pulse.size
+            base_w, base_h = base.size
+            offset = ((base_w - pulse_w) // 2, (base_h - pulse_h) // 2)
+            base.paste(pulse, offset, pulse.split()[3])  # Use alpha channel as mask
 
-    #Define the image rotation function
-    def rot_center(self, image, angle):
-        orig_rect = image.get_rect()
-        rot_image = pygame.transform.rotate(image, angle * -1)
-        rot_rect = orig_rect.copy()
-        rot_rect.center = rot_image.get_rect().center
-        rot_image = rot_image.subsurface(rot_rect).copy()
-        return rot_image
+        # Convert to RGB and display
+        self.device.display(base.convert("RGB"))
+
+        return ContactsArray(self.contacts)

@@ -43,6 +43,9 @@ Audio
 	wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/refs/heads/main/i2samp.py
 3) Make the file executable chmod +x i2samp.py
 4) Follow onscreen instructions to reboot
+5) Adafruit wiring guide: https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/raspberry-pi-wiring
+6) sudo nano /etc/modules and append spi-bcm2835 to the end.
+7) Reboot
 
 Frame buffer copy
 1) open terminal
@@ -88,3 +91,5 @@ Finally, set the pi resolution to match the tft resolution of 320x240
         framebuffer_width=320
 	framebuffer_height=240
 5) save by ctrl+x [enter] y [enter]
+
+ speaker-test -c2 --test=wav -w /usr/share/sounds/alsa/Front_Center.wav

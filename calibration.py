@@ -9,6 +9,7 @@ class Calibration:
 
     xOffset = 0
     yOffset = 0
+    heading = 0.0
 
     def __init__(self, scope, resources):
 
@@ -98,7 +99,25 @@ class Calibration:
         self.minx = 0 
         self.maxx = 0 
         self.miny = 0 
-        self.maxy = 0 
+        self.maxy = 0
+
+    def getHeading(self):
+        """Get the current compass heading in degrees."""
+        if not self.smbusAvailable:
+            return 0.0
+
+        x = self.read_word_2c(3)
+        y = self.read_word_2c(7)
+        z = self.read_word_2c(5)
+
+        x -= self.xOffset
+        y -= self.yOffset
+
+        heading = math.atan2(y, x)
+        if heading < 0:
+            heading += 2 * math.pi
+
+        return math.degrees(heading) 
 
     #calibration method
     def calibrate(self, index):
