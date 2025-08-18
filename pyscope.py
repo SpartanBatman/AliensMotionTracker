@@ -1,37 +1,44 @@
-from luma.core.interface.serial import spi
-from luma.lcd.device import ili9341
-from PIL import Image, ImageDraw, ImageFont
+import os, pygame
 
-class pyscope:
+#Define display class
+class pyscope :
+    
+    screen = None
+    pySurface = None
+    
     def __init__(self):
-        # Set up the SPI display using luma.lcd
-        self.serial = spi(port=0, device=0, gpio_DC=24, gpio_RST=25, bus_speed_hz=40000000)
-        #self.device = ili9341(self.serial, width=320, height=240, rotate=0, double_buffer=True)
-        self.device = ili9341(self.serial, width=320, height=240, rotate=0, double_buffer=True, framebuffer='diff_to_previous', hardware_acceleration=True)
-
-        # Create a blank image and drawing context
-        self.image = Image.new("RGB", (self.device.width, self.device.height), "black")
-        self.draw = ImageDraw.Draw(self.image)
-
-        # Load a default font
-        self.font = ImageFont.load_default()
-
-        # Clear the screen
-        self.clear()
-
-    def clear(self):
-        self.draw.rectangle((0, 0, self.device.width, self.device.height), fill="black")
-        self.device.display(self.image)
-
-    def draw_text(self, position, text, fill="white"):
-        self.draw.text(position, text, font=self.font, fill=fill)
-        self.device.display(self.image)
-
-    def draw_circle(self, center, radius, outline="white"):
-        x, y = center
-        self.draw.ellipse((x - radius, y - radius, x + radius, y + radius), outline=outline)
-        self.device.display(self.image)
-
-    def draw_line(self, start, end, fill="white"):
-        self.draw.line([start, end], fill=fill)
-        self.device.display(self.image)
+        
+        "Initializes a new pygame screen using the framebuffer"
+        # Based on "Python GUI in Linux frame buffer"
+        # http://www.karoltomala.com/blog/?p=679
+        disp_no = os.getenv("DISPLAY")
+        
+        # Check which frame buffer drivers are available
+        # Start with fbcon since directfb hangs with composite output
+        drivers = ['fbcon', 'directfb', 'svgalib']
+        found = False
+        for driver in drivers:
+            # Make sure that SDL_VIDEODRIVER is set
+            if not os.getenv('SDL_VIDEODRIVER'):
+                os.putenv('SDL_VIDEODRIVER', driver)
+            try:
+                pygame.display.init()
+            except pygame.error:
+                print ('Driver: {0} failed.'.format(driver))
+                continue
+            found = True
+            break
+    
+        if not found:
+            raise Exception('No suitable video driver found!')
+        size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+        flags = pygame.DOUBLEBUF | pygame.HWSURFACE | pygame.FULLSCREEN
+        self.screen = pygame.display.set_mode(size, flags)
+        surface = pygame.Surface((320,240))
+        self.pySurface = surface.convert()
+        
+        # Initialise font support
+        pygame.font.init()
+ 
+    def __del__(self):
+        "Destructor to make sure pygame shuts down, etc."

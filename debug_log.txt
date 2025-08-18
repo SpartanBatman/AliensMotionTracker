@@ -1,0 +1,17 @@
+Button press detected
+Button short press. Total presses: 1
+Button press detected
+Button short press. Total presses: 2
+Button press detected
+Button short press. Total presses: 1
+Button press detected
+Button held > 4s - entering calibration
+initCalibration() error: [Errno 121] Remote I/O error
+Traceback (most recent call last):
+  File "mainc.py", line 122, in <module>
+    ca.initCalibration()
+  File "/home/pi/AliensMotionTracker-master/calibration.py", line 92, in initCalibration
+    self.write_byte(0, 0b01110000) # Set to 8 samples @ 15Hz
+  File "/home/pi/AliensMotionTracker-master/calibration.py", line 51, in write_byte
+    self.bus.write_byte_data(self.address, adr, value)
+OSError: [Errno 121] Remote I/O error
