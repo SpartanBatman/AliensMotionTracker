@@ -37,8 +37,6 @@ This project was built and tested with the following system and Python libraries
 
 #### System / Core
 
-python-apt==1.8.4.3 – Python bindings for APT (Debian package management)
-
 RPi.GPIO==0.7.0 – Low-level Raspberry Pi GPIO control
 
 gpiozero==1.6.2 – High-level GPIO interface for Raspberry Pi
