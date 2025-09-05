@@ -96,4 +96,6 @@ pygame==1.9.4 – 2D graphics, input, and sound handling (used for HUD, sprites,
 
 PyGObject==3.30.4 – Python bindings for GNOME/GTK (GUI support if needed)
 
+#### Acknowledgements
 
+For Jo.
