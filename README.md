@@ -29,11 +29,46 @@ Resistors (for buttons, if required—depending on pull-up configuration)
 
 ## Software
 
-I opted to run Pi Buster 2021-12-02 due to easier build environment and some libraries based on MartinR1000's build simply worked. Running a more up-to-date version of PiOS meant it would have required more rewriting of his code to get this working.
+I opted to run Pi Buster 2021-12-02 due to easier build environment and some libraries based on MartinR1000's build simply worked. Running a more up-to-date version of PiOS meant it would have required more rewriting of his code to get this working as well running Python in virtual environments. For an isolated system running a movie prop, Cyber Sec is not a priority for me.
 
 ### Installed Libraries
 
 This project was built and tested with the following system and Python libraries.
+
+    python3-pip \
+    python3-dev \
+    python3-numpy \
+    python3-pil \
+    python3-smbus \
+    libopenjp2-7 \
+    libatlas-base-dev \
+    libtiff5 \
+    liblcms2-2 \
+    libwebp6 \
+    tcl8.6 \
+    tk8.6 \
+    libharfbuzz0b \
+    git \
+    omxplayer \
+    libsdl1.2debian \
+    libsdl-image1.2 \
+    libsdl-ttf2.0-0 \
+    libsdl-mixer1.2 
+
+Python3 libs
+
+    smbus2 \
+    luma.core \
+    luma.oled \
+    adafruit-blinka \
+    adafruit-circuitpython-framebuf \
+    adafruit-ili9341 \
+    adafruit-circuitpython-motor \
+    adafruit-circuitpython-ads1x15 \
+    adafruit-python-shell \
+    circuitpython-qmc5883l \
+    Click \
+    pygame==1.9.4
 
 #### System / Core
 
@@ -57,7 +92,7 @@ adafruit-python-shell==1.9.1 – Helper for running setup/install scripts
 
 #### Graphics & Game Development
 
-pygame==1.9.4.post1 – 2D graphics, input, and sound handling (used for HUD, sprites, etc.)
+pygame==1.9.4 – 2D graphics, input, and sound handling (used for HUD, sprites, etc.)
 
 PyGObject==3.30.4 – Python bindings for GNOME/GTK (GUI support if needed)
 
