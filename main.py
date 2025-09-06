@@ -95,7 +95,7 @@ currentState = True
 startupTimerStart = time.time()
 startupTimerCurrent = time.time()
 qPress = False
-os.system("fbcp &")
+#os.system("fbcp &")
 
 # show the startup graphics
 sg.draw()

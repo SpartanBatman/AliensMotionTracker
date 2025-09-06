@@ -1,11 +1,18 @@
 import os
 import subprocess
-import time
 
 class StartupGraphics:
     def __init__(self, scope, resources):
         self.scope = scope
         self.resources = resources
+
+    def kill_fbcp(self):
+        """Kill fbcp if it is running."""
+        try:
+            subprocess.run(["pkill", "fbcp"], check=True)
+            print("fbcp terminated")
+        except subprocess.CalledProcessError:
+            print("fbcp not running")
 
     def draw(self):
         # Get absolute path to the startup video
@@ -25,19 +32,21 @@ class StartupGraphics:
         # omxplayer command
         cmd = [
             "omxplayer",
-            "--no-osd",        # no on-screen display
-            "--orientation", "180",  # rotate 180 degrees
-            "--aspect-mode", "fill",  # fill screen
+            "--no-osd",
+            "--orientation", "180",
+            "--aspect-mode", "fill",
             "--blank",
             video_path
         ]
 
         try:
+            # This will block until the video finishes
             subprocess.run(cmd, check=True)
         except FileNotFoundError:
             print("[Startup] ERROR: omxplayer not found. Install with: sudo apt install omxplayer")
         except subprocess.CalledProcessError as e:
             print(f"[Startup] ERROR: omxplayer exited with code {e.returncode}")
 
-        # Small delay so it doesn't instantly jump to main loop
-#        time.sleep(0.2)
+        # Kill fbcp after video finishes
+        self.kill_fbcp()
+
