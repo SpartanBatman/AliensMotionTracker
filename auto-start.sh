@@ -1,13 +1,13 @@
 #!/bin/sh
 # auto-start.sh
 
-sleep 2
+#sleep 2
 
 # Show logo, keep process running in background and hides the console from the screen.
 sudo fbi -T 1 -d /dev/fb1 -noverbose -a /home/pi/AliensMotionTracker/resources/startup/USCM_Logo.png &
 FBI_PID=$!
 
-sleep 10
+#sleep 10
 
 fbcp &
 
