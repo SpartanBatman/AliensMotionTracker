@@ -1,0 +1,12 @@
+smbus2
+luma.core
+luma.oled
+adafruit-blinka
+adafruit-circuitpython-framebuf
+adafruit-ili9341
+adafruit-circuitpython-motor
+adafruit-circuitpython-ads1x15
+adafruit-python-shell
+circuitpython-qmc5883l
+Click
+pygame==1.9.4
