@@ -18,8 +18,10 @@ GPIO Extender / T-Board + Ribbon Cable (for easier wiring access)\
 [Adafruit 2.8" PiTFT Plus (Capacitive Touch)](https://thepihut.com/products/adafruit-pitft-plus-320x240-2-8-tft-capacitive-touchscreen) – ILI9341 driver\
 Physical Control Buttons (wired to GPIO, via GPIOzero)\
 [GY-271 QMC5883L Magnetometer Compass](https://ebay.us/m/zPIQNP)\
-[MAX98357A](https://thepihut.com/products/adafruit-i2s-3w-class-d-amplifier-breakout-max98357a)\
+USB Audio Adapter (e.g. Sabrent USB Audio)\
+PAM8403 Amplifier (or similar small 5V amp)\
 [Speaker - 4 Ohm 3 Watt ](https://thepihut.com/products/speaker-40mm-diameter-4-ohm-3-watt)\
+3.5mm jack breakout (or cut cable)\
 
 Other Electronics
 
@@ -52,6 +54,16 @@ gpiozero==1.6.2 – High-level GPIO interface for Raspberry Pi
 spidev==3.5 – SPI interface for Raspberry Pi
 
 smbus2==0.5.0 – I²C/SMBus communication
+
+#### Display configuration / config.txt
+
+hdmi_force_hotplug=1
+dtparam=spi=on
+dtparam=i2c1=on
+dtparam=i2c_arm=on
+dtoverlay=pitft22,rotate=90,speed=64000000,fps=30
+
+⚠️ Do NOT include drm if using framebuffer rendering.
 
 #### Hardware & Device Support
 
